@@ -6,9 +6,7 @@
  */
 export const pick = (obj, ...fields) => {
     const result = {};
-    for (const key of fields){
-        result[key] = obj[key];
-    }
-
+    const keysToCopy = Object.keys(obj).filter((key) => fields.includes(key));
+    keysToCopy.forEach( key => result[key] = obj[key]);
     return result;
 };
