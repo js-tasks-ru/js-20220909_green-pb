@@ -5,11 +5,8 @@
  * @returns {object} - returns the new object
  */
 export const omit = (obj, ...fields) => {
-    let result = {...obj}; // shallow copy, TODO deep copy
-
-    for (let key of fields){
-        delete result[key]; // no error if key is not present
-    }
-
+    const result = {};
+    const keysToCopy = Object.keys(obj).filter((key) => !fields.includes(key));
+    keysToCopy.forEach( key => result[key] = obj[key]);
     return result;
 };
