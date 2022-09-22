@@ -1,4 +1,4 @@
-import ColumnChart from '../solution/index.js';
+import ColumnChart from './index.js';
 
 describe('oop-basic-intro-to-dom/column-chart', () => {
   let columnChart;
@@ -90,14 +90,16 @@ describe('oop-basic-intro-to-dom/column-chart', () => {
   });
 
   it('should have ability to be updated by new "data" values (should re-render only body with charts columns)', () => {
-    const data = [10];
+    const data = [10, 0];
 
     columnChart = new ColumnChart({ data });
 
     const chart = columnChart.element.querySelector('.column-chart__chart');
 
-    const newData = [20];
+    const newData = [0, 20];
     const columnProps = getColumnProps(newData);
+
+    console.log(getColumnProps(newData),getColumnProps(newData))
 
     columnChart.update(newData);
 
