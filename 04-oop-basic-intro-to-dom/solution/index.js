@@ -50,8 +50,8 @@ export default class ColumnChart {
     }
 
     update(newData) {
-       this.params.data = newData;
-       this.element.querySelector('.column-chart__chart').innerHTML = this.getColumnsTemplate(newData);
+        this.params.data = newData;
+        // TODO RERENDER?
     }
 
     initEventListeners() {
