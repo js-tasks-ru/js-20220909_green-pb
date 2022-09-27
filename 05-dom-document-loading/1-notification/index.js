@@ -43,9 +43,9 @@ export default class NotificationMessage {
     }
 
     show(targetElement = document.body) {
-        NotificationMessage.listOfDisplayingMessages.forEach(message => {
-            message.remove();
-        });
+        while (NotificationMessage.listOfDisplayingMessages.length) {
+            NotificationMessage.listOfDisplayingMessages.pop().remove();
+        }        
         NotificationMessage.listOfDisplayingMessages.push(this);        
         targetElement.append(this.element);
         setTimeout(() => this.remove(), this.duration); // стрелочная функция для сохранения контекста
