@@ -24,8 +24,8 @@ export default class SortableTable {
     const result = this.headerConfig.map((columnHeader) => `  
       <div class="sortable-table__cell" data-id="title" data-sortable="${columnHeader.sortable}" ${this.getDataOrderAttributeTemplate(columnHeader.sortOrder)}>
         <span>${columnHeader.title}</span>
-        ${columnHeader.sortable ?
-        '<span data-element="arrow" class="sortable-table__sort-arrow"><span class="sort-arrow"></span></span>'
+        ${columnHeader.sortable
+        ? '<span data-element="arrow" class="sortable-table__sort-arrow"><span class="sort-arrow"></span></span>'
         : ''}
       </div>
       `)
@@ -51,7 +51,7 @@ export default class SortableTable {
   }
 
   getCellBody(dataElement, columnHeader) {
-    if (columnHeader.id === 'images' && columnHeader.template) {
+    if (columnHeader.template) {
       return columnHeader.template(dataElement);
     }
     else {
