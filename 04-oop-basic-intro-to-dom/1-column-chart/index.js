@@ -1,26 +1,34 @@
 export default class ColumnChart {
     chartHeight = 50;
 
-    constructor(params) {
-        this.params = params;
+    constructor({
+        data = [],
+        label = '',
+        value = NaN,
+        link = null,
+        formatHeading = data => `${data}`,
+    } = {}) {
+        this.data = data;
+        this.label = label;
+        this.value = value;
+        this.link = link;
+        this.formatHeading = formatHeading;
 
         this.render();
-        this.initEventListeners();
     }
 
     getTemplate() {
-        const p = this.params;
-        if (!p) {
+        if (!this.label && !this.value && !this.link && this.data.length === 0) {
             return `
             <div class="column-chart_loading">                
             </div>`;
         }
         const result = `
           <div class="wrapper">             
-                <h1 class="column-chart__title">Total ${p.label} ${this.getLinkTemplate(p.link)}</h1>    
+                <h1 class="column-chart__title">Total ${this.label} ${this.link ? `<a src=${this.link} class="column-chart__link">View all</a>` : ''}</h1>    
                 <div class="column-chart__container">
-                    <h2 class="column-chart__header">${(p.formatHeading) ? (p.formatHeading(p.value)) : (p.value)}</h2>
-                    <div class="column-chart__chart">${this.getColumnsTemplate(p.data)}</div>             
+                    <h2 class="column-chart__header">${(this.formatHeading) ? (this.formatHeading(this.value)) : (this.value)}</h2>
+                    <div class="column-chart__chart">${this.getColumnsTemplate(this.data)}</div>             
                 </div>
           </div>
         `;
@@ -28,15 +36,9 @@ export default class ColumnChart {
     }
 
     getColumnsTemplate(data) {
-        if (!data || data.length == 0) return '';
         return this.getColumnProps(data)
             .map((item) => `<div style="--value: ${item.value}" data-tooltip="${item.percent}"></div>`)
             .join('');
-    }
-
-    getLinkTemplate(link) {
-        if (!link) return '';
-        return `<a src=${link} class="column-chart__link">View all</a>`;
     }
 
     render() {
@@ -50,12 +52,8 @@ export default class ColumnChart {
     }
 
     update(newData) {
-       this.params.data = newData;
-       this.element.querySelector('.column-chart__chart').innerHTML = this.getColumnsTemplate(newData);
-    }
-
-    initEventListeners() {
-        // NOTE: в данном методе добавляем обработчики событий, если они есть
+        this.data = newData;
+        this.element.querySelector('.column-chart__chart').innerHTML = this.getColumnsTemplate(newData);
     }
 
     remove() {
@@ -64,7 +62,6 @@ export default class ColumnChart {
 
     destroy() {
         this.remove();
-        // NOTE: удаляем обработчики событий, если они есть
     }
 
     getColumnProps(data) { // copied from tests
