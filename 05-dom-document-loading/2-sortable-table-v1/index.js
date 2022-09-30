@@ -22,7 +22,9 @@ export default class SortableTable {
 
   getHeadersBody() {
     const result = this.headerConfig.map((columnHeader) => `  
-      <div class="sortable-table__cell" data-id="title" data-sortable="${columnHeader.sortable}" ${this.getDataOrderAttributeTemplate(columnHeader.sortOrder)}>
+      <div class="sortable-table__cell" data-id="title" 
+        data-sortable="${columnHeader.sortable}" 
+        ${columnHeader.sortOrder ? `data-order="${columnHeader.sortOrder}"` : ''}>
         <span>${columnHeader.title}</span>
         ${columnHeader.sortable
         ? '<span data-element="arrow" class="sortable-table__sort-arrow"><span class="sort-arrow"></span></span>'
@@ -31,11 +33,6 @@ export default class SortableTable {
       `)
       .join('');
     return result;
-  }
-
-  getDataOrderAttributeTemplate(sortOrder) {
-    if (!sortOrder) return '';
-    return `data-order="${sortOrder}"`;
   }
 
   getColumnsBody() {
@@ -51,18 +48,16 @@ export default class SortableTable {
   }
 
   getCellBody(dataElement, columnHeader) {
-    if (columnHeader.template) {
-      return columnHeader.template(dataElement);
-    }
-    else {
-      return `<div class="sortable-table__cell">${dataElement[columnHeader.id]}</div>`;
-    }
+    return columnHeader.template
+      ? columnHeader.template(dataElement)
+      : `<div class="sortable-table__cell">${dataElement[columnHeader.id]}</div>`;
+
   }
 
   sort(fieldValue, orderValue = 'asc') {
     if (orderValue !== 'asc' && orderValue !== 'desc') throw ('orderValue incorrect value: ' + orderValue);
     let columnIndex = this.headerConfig.findIndex((columnHeader) => columnHeader.id === fieldValue);
-    if (columnIndex == -1) return;
+    if (columnIndex === -1) return;
 
     const columnHeader = this.headerConfig[columnIndex];
     columnHeader.sortOrder = orderValue;
