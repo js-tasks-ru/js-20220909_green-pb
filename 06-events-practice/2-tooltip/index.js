@@ -1,7 +1,8 @@
 class Tooltip {
-  offset = [10, 10];
-
   static instance;
+
+  controller = new AbortController();  
+  offset = [10, 10];
 
   constructor() {
     if (Tooltip.instance) return Tooltip.instance;
@@ -9,24 +10,25 @@ class Tooltip {
   }
 
   initialize() {
-    document.querySelectorAll('[data-tooltip]')
-      .forEach((element) => {
-        element.addEventListener('mousemove', (event) => this.move(event));
-        element.addEventListener('pointerover', (event) => this.over(event));
-        element.addEventListener('pointerout', (event) => this.out(event));
-      })
+    document.addEventListener('pointerover', (event) => this.over(event), this.controller.signal);
+  }
+
+  over(event) {
+    let targetElement = event.target;
+    while (targetElement) { // на случай вложенных тегов ищем родителя с dataset.tooltip
+      if (targetElement.dataset.tooltip) break;
+      targetElement = targetElement.parentElement;
+    }
+    if (!targetElement) return;
+    document.addEventListener('pointermove', (event) => this.move(event), this.controller.signal);
+    document.addEventListener('pointerout', (event) => this.out(event), this.controller.signal);
+    this.render(targetElement.dataset.tooltip);
   }
 
   move(event) {
     this.element.style.position = "absolute";
     this.element.style.left = event.clientX + this.offset[0] + 'px';
     this.element.style.top = event.clientY + this.offset[1] + 'px';
-  }
-
-  over(event) {
-    if (event.tooltipIsShown) return; // если уже показали, иначе при всплытии отработает еще раз
-    this.render(event.target.dataset.tooltip);
-    event.tooltipIsShown = true; // сработаем только на таргете, при всплытии уже не будем работать
   }
 
   out(event) {
@@ -46,6 +48,7 @@ class Tooltip {
 
   destroy() {
     this.remove();
+    this.controller.abort();
   }
 }
 
