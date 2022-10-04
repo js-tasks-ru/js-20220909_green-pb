@@ -120,7 +120,6 @@ export default class SortableTable {
     const element = event.target.closest('[data-sortable="true"]');
     if (!element) return;
     const fieldId = element.dataset.id;
-    console.log(fieldId);
 
     let columnIndex = this.headerConfig.findIndex((columnHeader) => columnHeader.id === fieldId);
     if (columnIndex === -1) throw ("No element in headerConfig");
