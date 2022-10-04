@@ -8,9 +8,8 @@ export default class SortableTable {
     this.sorted = sorted;
     this.isSortLocally = isSortLocally;
 
-    this.render();
-
     this.sort(sorted.id, sorted.order = 'asc');
+    this.render();
   }
 
 
@@ -30,7 +29,7 @@ export default class SortableTable {
 
   getHeadersBody() {
     const result = this.headerConfig.map((columnHeader) => `  
-      <div class="sortable-table__cell" data-id="title" 
+      <div class="sortable-table__cell" data-id="${columnHeader.id}" 
         data-sortable="${columnHeader.sortable}" 
         ${columnHeader.sortOrder ? `data-order="${columnHeader.sortOrder}"` : ''}>
         <span>${columnHeader.title}</span>
@@ -93,7 +92,7 @@ export default class SortableTable {
       else throw ('unknown sortType in headerConfig');
     })
 
-    this.element.innerHTML = this.getTemplate();
+    this.render();
   }
 
   sortOnServer(fieldId, orderValue = 'asc') {
@@ -101,28 +100,37 @@ export default class SortableTable {
   }
 
   render() {
-    this.element = document.createElement("div");
-    this.element.setAttribute("data-element", "productsContainer");
-    this.element.setAttribute("class", "products-list__container");
+    if (!this.element) {
+      this.element = document.createElement("div");
+      this.element.setAttribute("data-element", "productsContainer");
+      this.element.setAttribute("class", "products-list__container");
+    }
     this.element.innerHTML = this.getTemplate();
-    
-    this.element.querySelectorAll('[data-sortable]')
-      .forEach((element) => {        
-        if (element.dataset.sortable === "true") {
-          
-          element.onclick = function() {
-            console.log('click');
-          };
-          console.log('attaching to', element,element.onclick);
-          console.dir(element);
-          
-          // element.addEventListener('click', (event) => this.headerPointerdown(event));
-        }
+    this.attachEventListeners();
+  }
+
+  attachEventListeners() {
+    this.element.querySelectorAll('[data-element="header"]')
+      .forEach((element) => {
+        element.addEventListener('pointerdown', (event) => this.headerPointerdown(event));
       })
   }
 
-  headerPointerdown(event){
-    console.log(event);
+  headerPointerdown(event) {
+    const element = event.target.closest('[data-sortable="true"]');
+    if (!element) return;
+    const fieldId = element.dataset.id;
+    console.log(fieldId);
+
+    let columnIndex = this.headerConfig.findIndex((columnHeader) => columnHeader.id === fieldId);
+    if (columnIndex === -1) throw ("No element in headerConfig");
+    const columnHeader = this.headerConfig[columnIndex];
+
+    let orderValue;
+    if (!columnHeader.sortOrder) orderValue = 'asc';
+    else if (columnHeader.sortOrder === 'asc') orderValue = 'desc';
+    else if (columnHeader.sortOrder === 'desc') orderValue = 'asc';
+    this.sort(fieldId, orderValue);
   }
 
   remove() {
