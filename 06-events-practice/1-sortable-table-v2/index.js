@@ -83,7 +83,7 @@ export default class SortableTable {
       const b = dataElementB[fieldId];
       if (columnHeader.sortType === 'number') {
         return ((orderValue === 'desc') ? -1 : 1)  // reverse order if 'desc'
-          * a - b;
+          * b - a;
       }
       else if (columnHeader.sortType === 'string') {
         return ((orderValue === 'desc') ? -1 : 1)  // reverse order if 'desc'
@@ -121,15 +121,18 @@ export default class SortableTable {
     if (!element) return;
     const fieldId = element.dataset.id;
 
-    let columnIndex = this.headerConfig.findIndex((columnHeader) => columnHeader.id === fieldId);
-    if (columnIndex === -1) throw ("No element in headerConfig");
-    const columnHeader = this.headerConfig[columnIndex];
-
-    let orderValue;
-    if (!columnHeader.sortOrder) orderValue = 'asc';
-    else if (columnHeader.sortOrder === 'asc') orderValue = 'desc';
-    else if (columnHeader.sortOrder === 'desc') orderValue = 'asc';
-    this.sort(fieldId, orderValue);
+    for (let columnHeader of this.headerConfig) {
+      if (columnHeader.id === fieldId) {
+        let orderValue;
+        if (!columnHeader.sortOrder) orderValue = 'asc';
+        else if (columnHeader.sortOrder === 'asc') orderValue = 'desc';
+        else if (columnHeader.sortOrder === 'desc') orderValue = 'asc';
+        this.sort(fieldId, orderValue);
+      }
+      else {
+        columnHeader.sortOrder = null;
+      }
+    }
   }
 
   remove() {
