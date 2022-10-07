@@ -1,5 +1,5 @@
 export default class NotificationMessage {
-    static listOfDisplayingMessages = [];
+    static displayingMessage;
 
     constructor(
         message = 'empty',
@@ -14,10 +14,10 @@ export default class NotificationMessage {
         this.render();
     }
 
-    getTemplate() {        
+    getTemplate() {
         const result = `
         <div class="${this.type}">    
-            <div class="notification ${this.type}" style="--value:${this.duration/1000}s">
+            <div class="notification ${this.type}" style="--value:${this.duration / 1000}s">
                 <div class="timer"></div>
                     <div class="inner-wrapper">
                         <div class="notification-header">${this.type}</div>
@@ -42,11 +42,9 @@ export default class NotificationMessage {
         this.element = element.firstElementChild;
     }
 
-    show(targetElement = document.body) {
-        while (NotificationMessage.listOfDisplayingMessages.length) {
-            NotificationMessage.listOfDisplayingMessages.pop().remove();
-        }        
-        NotificationMessage.listOfDisplayingMessages.push(this);        
+    show(targetElement = document.body) {        
+        NotificationMessage.displayingMessage?.remove();
+        NotificationMessage.displayingMessage = this;
         targetElement.append(this.element);
         setTimeout(() => this.remove(), this.duration); // стрелочная функция для сохранения контекста
     }

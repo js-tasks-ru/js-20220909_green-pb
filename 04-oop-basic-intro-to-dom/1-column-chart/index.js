@@ -4,8 +4,8 @@ export default class ColumnChart {
     constructor({
         data = [],
         label = '',
-        value = NaN,
-        link = null,
+        value = 0,
+        link = '',
         formatHeading = data => `${data}`,
     } = {}) {
         this.data = data;
